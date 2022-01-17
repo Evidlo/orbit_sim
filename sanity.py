@@ -1,37 +1,57 @@
 #!/usr/bin/env python
 
-from math import cos, sin, atan, degrees, pi, sqrt
+from math import cos, sin, atan, pi, sqrt
+from math import degrees as deg
+from math import radians as rad
 
-beta = 37 # target beta (degrees)
+beta = rad(37) # target beta (rad)
 s = 39.9 # target separation (m)
-u = 2 * pi * 3 / 4 # mean anomaly at observation point
+u = 2 * pi * 1 / 4 # arg of latitude of observation point (rad)
+orbit_duration = 96 * 60 # (s)
 
 # relative orbital elements (equation 6)
-d_a = 0
-d_l = s * cos(beta)
-d_ex = -s * cos(beta) * sin(u)
-d_ey = s * cos(beta) * cos(u)
-d_ix = s * sin(beta) * sin(u)
+d_a =   0
+d_l =  -s * cos(beta)
+d_ex =  s * cos(beta) * sin(u)
+d_ey = -s * cos(beta) * cos(u)
+d_ix =  s * sin(beta) * sin(u)
 d_iy = -s * sin(beta) * cos(u)
 
-# RTN frame (equation 5)
-r = d_a - cos(u) * d_ex - sin(u) * d_ey
-t = d_l + 2 * sin(u) * d_ex - 2 * cos(u) * d_ey
-n = sin(u) * d_ix - cos(u) * d_iy
+# relative RTN frame (equation 5)
+r_r = d_a - cos(u) * d_ex - sin(u) * d_ey
+r_t = d_l + 2 * sin(u) * d_ex - 2 * cos(u) * d_ey
+r_n = sin(u) * d_ix - cos(u) * d_iy
+
+n = 2 * pi / orbit_duration # mean motion (rad/s)
+v_r = n * sin(u) * d_ex - n * cos(u) * d_ey
+v_t = -1.5 * n * d_a + 2 * n * cos(u) * d_ex + 2 * n * sin(u) * d_ey
+v_n = cos(u) * d_ix + sin(u) * d_iy
 
 # sanity check - compute beta/separation from RTN coordinates
 # at observation position
-actual_separation = sqrt(r**2 + t**2 + n**2)
-actual_beta = degrees(atan(n / t))
+actual_separation = sqrt(r_r**2 + r_t**2 + r_n**2)
+actual_beta = deg(atan(r_n / r_t))
 
-print('r:', r)
-print('t:', t)
-print('n:', n)
+print("RTN offset:")
+print('r_r:', r_r)
+print('r_t:', r_t)
+print('r_n:', r_n)
+print("RTN velocity:")
+print('v_r:', v_r)
+print('v_t:', v_t)
+print('v_n:', v_n)
+print()
 print('actual separation:', actual_separation)
 print('actual beta:', actual_beta)
 
-# r: 0.0
-# t: -30.5400206726192
-# n: -25.677171520944277
+# RTN offset:
+# r_r: 0.0
+# r_t: 31.865556850886982
+# r_n: 24.012419423766726
+# RTN velocity:
+# v_r: 0.03475993031433835
+# v_t: 0.0
+# v_n: 0.0
+
 # actual separation: 39.9
-# actual beta: 40.056158015954125
+# actual beta: 37.0
