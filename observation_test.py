@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Evaluate spacecraft relative position and velocity
+# at instant of observation
 
 from math import cos, sin, atan, pi, sqrt
 from math import degrees as deg
@@ -6,7 +8,7 @@ from math import radians as rad
 
 beta = rad(37) # target beta (rad)
 s = 39.9 # target separation (m)
-u = 2 * pi * 1 / 4 # arg of latitude of observation point (rad)
+u = 2 * pi * 2 / 4 # arg of latitude of observation point (rad)
 orbit_duration = 96 * 60 # (s)
 
 # relative orbital elements (equation 6)
@@ -32,26 +34,34 @@ v_n = cos(u) * d_ix + sin(u) * d_iy
 actual_separation = sqrt(r_r**2 + r_t**2 + r_n**2)
 actual_beta = deg(atan(r_n / r_t))
 
+print('design separation:', s)
+print('design beta:', deg(beta))
+print()
+print('actual separation:', actual_separation)
+print('actual beta:', actual_beta)
+print()
 print("RTN offset:")
 print('r_r:', r_r)
 print('r_t:', r_t)
 print('r_n:', r_n)
+print()
 print("RTN velocity:")
 print('v_r:', v_r)
 print('v_t:', v_t)
 print('v_n:', v_n)
-print()
-print('actual separation:', actual_separation)
-print('actual beta:', actual_beta)
+
+# design separation: 39.9
+# design beta: 37.0
+
+# actual separation: 39.9
+# actual beta: 37.0
 
 # RTN offset:
 # r_r: 0.0
 # r_t: 31.865556850886982
 # r_n: 24.012419423766726
+
 # RTN velocity:
 # v_r: 0.03475993031433835
 # v_t: 0.0
 # v_n: 0.0
-
-# actual separation: 39.9
-# actual beta: 37.0
